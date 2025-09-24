@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  	<Version>0.1.1</Version>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<WarningsAsErrors>Nullable</WarningsAsErrors>
+	<AssemblyVersion>$(Version+".0")</AssemblyVersion>
+	<Title>JellyfinLoader Stub</Title>
+	<Authors>stenlan</Authors>
+	<FileVersion>$(Version+".0")</FileVersion>
+	<PackageProjectUrl>https://github.com/stenlan/JellyfinLoaderStub</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/stenlan/JellyfinLoaderStub</RepositoryUrl>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<Description>Stub for JellyfinLoader-dependent plugins.</Description>
+	<BuiltJellyfinDepPath>$(BaseOutputPath)/dep/$(Configuration)/$(TargetFramework)</BuiltJellyfinDepPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+	<Compile Remove="build\**" />
+	<EmbeddedResource Remove="build\**" />
+	<None Remove="build\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Compile Remove="jellyfin\**" />
+	<EmbeddedResource Remove="jellyfin\**" />
+	<None Remove="jellyfin\**" />
+	<EditorConfigFiles Remove="jellyfin\.editorconfig" />
+  </ItemGroup>
+
+  <Target Name="EnsureJellyfinTree" BeforeTargets="BuildJellyfinServer" Condition="!Exists('$(BaseOutputPath)/dep/tree')">
+	<MakeDir Directories="$(BaseOutputPath)/dep"/>
+	<Exec WorkingDirectory="jellyfin" Command="git archive --format zip --output ../$(BaseOutputPath)/dep/tree.zip $(TargetJellyfinRef)"/>
+	<Unzip SourceFiles="$(BaseOutputPath)\dep\tree.zip" DestinationFolder="$(BaseOutputPath)\dep\tree"/>
+	<Delete Files="$(BaseOutputPath)\dep\tree.zip"/>
+	<Exec WorkingDirectory="$(BaseOutputPath)/dep/tree" Command="dotnet restore"/>
+  </Target>
+
+  <Target Name="BuildJellyfinServer" BeforeTargets="ResolveAssemblyReferences" Condition="!Exists('$(BuiltJellyfinDepPath)')">
+	<Exec WorkingDirectory="$(BaseOutputPath)/dep/tree" Command="dotnet build Jellyfin.Server -c $(Configuration) -f $(TargetFramework) -o ../$(Configuration)/$(TargetFramework)" />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="Emby.Server.Implementations">
+      <HintPath>$(BuiltJellyfinDepPath)\Emby.Server.Implementations.dll</HintPath>
+    </Reference>
+
+	<Reference Include="MediaBrowser.Common">
+      <HintPath>$(BuiltJellyfinDepPath)\MediaBrowser.Common.dll</HintPath>
+	</Reference>
+
+	<Reference Include="MediaBrowser.Controller">
+	  <HintPath>$(BuiltJellyfinDepPath)\MediaBrowser.Controller.dll</HintPath>
+	</Reference>
+
+	<Reference Include="MediaBrowser.Model">
+	  <HintPath>$(BuiltJellyfinDepPath)\MediaBrowser.Model.dll</HintPath>
+	</Reference>
+
+	<Reference Include="Microsoft.Extensions.Logging.Abstractions">
+		<HintPath>$(BuiltJellyfinDepPath)\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
