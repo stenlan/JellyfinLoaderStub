@@ -1,0 +1,29 @@
+name: 'Create NuGet release'
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+        - major
+        - minor
+        - patch
+jobs:
+  create_nuget_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24.x'
+      - uses: actions/github-script@v8
+        id: awd
+        with:
+          script: |
+            const workflowRef = context.github.workflow_ref;
+            const workflowPath = workflowRef.substring(context.payload.repository.length, workflowRef.lastIndexOf("@"));
+            return workflowPath.substring(0, workflowPath.lastIndexOf("/"));
+          result-encoding: string
+      - run: node ${{steps.awd.outputs.result}}/node/increase-version.js JellyfinLoaderStub/JellyfinLoaderStub-common.csproj ${{inputs.release_type}}
