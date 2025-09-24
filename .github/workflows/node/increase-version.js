@@ -1,6 +1,4 @@
-import {readFile, writeFile, readdir} from "fs/promises";
-
-console.log("readdir res", (await readdir("jellyfin")))
+import {readFile, writeFile} from "fs/promises";
 
 function regexReplace(str, regex, replacer) {
     const matchArray = regex.exec(str);
@@ -30,5 +28,11 @@ const filePath = process.argv[2];
 const increaseType = process.argv[3];
 
 let csProjTxt = await readFile(filePath, "utf-8");
+let newVersion;
 
-await writeFile(filePath, regexReplace(csProjTxt, /<Version>(.+?)<\/Version>/, (version) => `<Version>${increaseVersion(version, increaseType)}</Version>`));
+await writeFile(filePath, regexReplace(csProjTxt, /<VersionPrefix>(.+?)<\/VersionPrefix>/, (version) => {
+    newVersion = increaseVersion(version, increaseType);
+    return `<VersionPrefix>${newVersion}</VersionPrefix>`;
+}));
+
+console.log(newVersion);

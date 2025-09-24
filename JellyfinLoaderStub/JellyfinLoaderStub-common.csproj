@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>0.1.1</Version>
+    <VersionPrefix>0.1.1</VersionPrefix>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
-    <AssemblyVersion>$(Version+".0")</AssemblyVersion>
+    <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
     <Title>JellyfinLoader Stub</Title>
     <Authors>stenlan</Authors>
-    <FileVersion>$(Version+".0")</FileVersion>
+    <FileVersion>$(VersionPrefix).0</FileVersion>
     <PackageProjectUrl>https://github.com/stenlan/JellyfinLoaderStub</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stenlan/JellyfinLoaderStub</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>

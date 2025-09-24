@@ -15,10 +15,27 @@ jobs:
   create_nuget_release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
           submodules: true
-      - uses: actions/setup-node@v5
+      - name: Setup node
+        uses: actions/setup-node@v5
         with:
           node-version: '24.x'
-      - run: node .github/workflows/node/increase-version.js JellyfinLoaderStub/JellyfinLoaderStub-common.csproj ${{inputs.release_type}}
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+      - name: Increase version
+        id: increase_version
+        run: echo "NEW_VERSION=$(node .github/workflows/node/increase-version.js JellyfinLoaderStub/JellyfinLoaderStub-common.csproj ${{inputs.release_type}})" >> "$GITHUB_OUTPUT"
+      - run: |
+          dotnet pack JellyfinLoaderStub/JellyfinLoaderStub-10.11.0.csproj
+          echo '{"sdk":{"version":"8.0.0","rollForward":"latestFeature"}}' > global.json
+          dotnet pack JellyfinLoaderStub/JellyfinLoaderStub-10.10.7.csproj
+          git add JellyfinLoaderStub/JellyfinLoaderStub-common.csproj
+          git commit -am "Release v${{ steps.increase_version.outputs.NEW_VERSION }}"
+          git push
