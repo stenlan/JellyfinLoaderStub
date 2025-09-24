@@ -33,10 +33,24 @@ jobs:
       - name: Increase version
         id: increase_version
         run: echo "NEW_VERSION=$(node .github/workflows/node/increase-version.js JellyfinLoaderStub/JellyfinLoaderStub-common.csproj ${{inputs.release_type}})" >> "$GITHUB_OUTPUT"
-      - run: |
+      - name: Pack projects
+        run: |
           dotnet pack JellyfinLoaderStub/JellyfinLoaderStub-10.11.0.csproj
           echo '{"sdk":{"version":"8.0.0","rollForward":"latestFeature"}}' > global.json
           dotnet pack JellyfinLoaderStub/JellyfinLoaderStub-10.10.7.csproj
+      - name: Push updated project file
+        run: |
+          git config --global user.name "${{ github.triggering_actor }}"
           git add JellyfinLoaderStub/JellyfinLoaderStub-common.csproj
           git commit -am "Release v${{ steps.increase_version.outputs.NEW_VERSION }}"
           git push
+      # - name: Upload to NuGet
+      #   run: |
+      - name: Upload to GitHub
+        uses: softprops/action-gh-release@v2.3.3
+        with:
+          files: ./JellyfinLoaderStub/build/*/bin/Release/*.nupkg
+          tag_name: v${{ steps.increase_version.outputs.NEW_VERSION }}
+          name: Release v${{ steps.increase_version.outputs.NEW_VERSION }}
+          target_commitish: ${{github.ref_name}}
+          draft: true
