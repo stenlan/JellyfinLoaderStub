@@ -1,4 +1,5 @@
-name: 'Create NuGet release'
+name: Create NuGet release
+run-name: Create NuGet release (${{inputs.release_type}})
 on:
   workflow_dispatch:
     inputs:

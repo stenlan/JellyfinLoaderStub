@@ -1,4 +1,6 @@
-import {readFile, writeFile} from "fs/promises";
+import {readFile, writeFile, readdir} from "fs/promises";
+
+console.log("readdir res", (await readdir("jellyfin")))
 
 function regexReplace(str, regex, replacer) {
     const matchArray = regex.exec(str);
