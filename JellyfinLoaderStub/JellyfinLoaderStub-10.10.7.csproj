@@ -7,5 +7,5 @@
 	<BaseOutputPath>$(MSBuildProjectExtensionsPath)\bin</BaseOutputPath>
   </PropertyGroup>
   
-  <Import Project="JellyfinLoaderStub.csproj" />
+  <Import Project="JellyfinLoaderStub-common.csproj" />
 </Project>

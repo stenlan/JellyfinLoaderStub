@@ -29,22 +29,15 @@
 	<None Remove="build\**" />
   </ItemGroup>
 
-  <ItemGroup>
-	<Compile Remove="jellyfin\**" />
-	<EmbeddedResource Remove="jellyfin\**" />
-	<None Remove="jellyfin\**" />
-	<EditorConfigFiles Remove="jellyfin\.editorconfig" />
-  </ItemGroup>
-
   <Target Name="EnsureJellyfinTree" BeforeTargets="BuildJellyfinServer" Condition="!Exists('$(BaseOutputPath)/dep/tree')">
 	<MakeDir Directories="$(BaseOutputPath)/dep"/>
-	<Exec WorkingDirectory="jellyfin" Command="git archive --format zip --output ../$(BaseOutputPath)/dep/tree.zip $(TargetJellyfinRef)"/>
+	<Exec WorkingDirectory="../jellyfin" Command="git archive --format zip --output ../JellyfinLoaderStub/$(BaseOutputPath)/dep/tree.zip $(TargetJellyfinRef)"/>
 	<Unzip SourceFiles="$(BaseOutputPath)\dep\tree.zip" DestinationFolder="$(BaseOutputPath)\dep\tree"/>
 	<Delete Files="$(BaseOutputPath)\dep\tree.zip"/>
 	<Exec WorkingDirectory="$(BaseOutputPath)/dep/tree" Command="dotnet restore"/>
   </Target>
 
-  <Target Name="BuildJellyfinServer" BeforeTargets="ResolveAssemblyReferences" Condition="!Exists('$(BuiltJellyfinDepPath)')">
+  <Target Name="BuildJellyfinServer" BeforeTargets="ResolveAssemblyReferences;PreBuildEvent" Condition="!Exists('$(BuiltJellyfinDepPath)')">
 	<Exec WorkingDirectory="$(BaseOutputPath)/dep/tree" Command="dotnet build Jellyfin.Server -c $(Configuration) -f $(TargetFramework) -o ../$(Configuration)/$(TargetFramework)" />
   </Target>
 
