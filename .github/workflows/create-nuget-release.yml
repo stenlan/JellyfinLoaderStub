@@ -22,6 +22,7 @@ jobs:
         id: awd
         with:
           script: |
+            console.log("Context", context);
             const workflowRef = context.github.workflow_ref;
             const workflowPath = workflowRef.substring(context.payload.repository.length, workflowRef.lastIndexOf("@"));
             return workflowPath.substring(0, workflowPath.lastIndexOf("/"));
