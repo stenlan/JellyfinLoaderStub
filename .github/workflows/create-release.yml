@@ -59,4 +59,3 @@ jobs:
           tag_name: v${{ steps.increase_version.outputs.NEW_VERSION }}
           name: Release v${{ steps.increase_version.outputs.NEW_VERSION }}
           target_commitish: ${{github.ref_name}}
-          draft: true
