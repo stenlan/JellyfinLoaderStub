@@ -14,7 +14,9 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Stub for JellyfinLoader-dependent plugins.</Description>
     <BuiltJellyfinDepPath>$(BaseOutputPath)/dep/$(Configuration)/$(TargetFramework)</BuiltJellyfinDepPath>
+	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <AssemblyName>JellyfinLoaderStub</AssemblyName>
+    <AssemblyName Condition="'$(APPEND_VERSION_TO_ASSEMBLY)' == 'TRUE'">JellyfinLoaderStub_$(TargetJellyfinRef)</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

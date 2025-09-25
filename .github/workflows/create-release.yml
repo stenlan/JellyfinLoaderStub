@@ -1,5 +1,5 @@
-name: Create NuGet release
-run-name: Create NuGet release (${{inputs.release_type}})
+name: Create release
+run-name: Create release (${{inputs.release_type}})
 on:
   workflow_dispatch:
     inputs:
@@ -12,7 +12,9 @@ on:
         - minor
         - patch
 jobs:
-  create_nuget_release:
+  create_release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -44,12 +46,16 @@ jobs:
           git add JellyfinLoaderStub/JellyfinLoaderStub-common.csproj
           git commit -am "Release v${{ steps.increase_version.outputs.NEW_VERSION }}"
           git push
-      # - name: Upload to NuGet
-      #   run: |
-      - name: Upload to GitHub
+      - name: Collect DLLs
+        run: .github/workflows/scripts/collect-versioned-dlls.sh
+      - name: Publish to NuGet
+        env:
+          NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
+        run: .github/workflows/scripts/nuget-publish.sh
+      - name: Release to GitHub
         uses: softprops/action-gh-release@v2.3.3
         with:
-          files: ./JellyfinLoaderStub/build/*/bin/Release/*.nupkg
+          files: ./collected/*.dll
           tag_name: v${{ steps.increase_version.outputs.NEW_VERSION }}
           name: Release v${{ steps.increase_version.outputs.NEW_VERSION }}
           target_commitish: ${{github.ref_name}}
