@@ -34,7 +34,7 @@ jobs:
             9.0.x
       - name: Increase version
         id: increase_version
-        run: echo "NEW_VERSION=$(node .github/workflows/node/increase-version.js JellyfinLoaderStub/JellyfinLoaderStub-common.csproj ${{inputs.release_type}})" >> "$GITHUB_OUTPUT"
+        run: echo "NEW_VERSION=$(node .github/node/increase-version.js JellyfinLoaderStub/JellyfinLoaderStub-common.csproj ${{inputs.release_type}})" >> "$GITHUB_OUTPUT"
       - name: Pack projects
         run: |
           dotnet pack JellyfinLoaderStub/JellyfinLoaderStub-10.11.0.csproj
@@ -47,11 +47,11 @@ jobs:
           git commit -am "Release v${{ steps.increase_version.outputs.NEW_VERSION }}"
           git push
       - name: Collect DLLs
-        run: .github/workflows/scripts/collect-versioned-dlls.sh
+        run: .github/scripts/collect-versioned-dlls.sh
       - name: Publish to NuGet
         env:
           NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
-        run: .github/workflows/scripts/nuget-publish.sh
+        run: .github/scripts/nuget-publish.sh
       - name: Release to GitHub
         uses: softprops/action-gh-release@v2.3.3
         with:
