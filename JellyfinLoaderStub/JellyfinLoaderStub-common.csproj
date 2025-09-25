@@ -1,7 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <PropertyGroup>
+    <MSBuildProjectExtensionsPath>build\$(TargetJellyfinRef)</MSBuildProjectExtensionsPath>
+    <BaseIntermediateOutputPath>$(MSBuildProjectExtensionsPath)\obj</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(MSBuildProjectExtensionsPath)\bin</BaseOutputPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <VersionPrefix>0.1.2</VersionPrefix>
-	<VersionSuffix>$(TargetJellyfinRef)</VersionSuffix>
+	  <VersionSuffix>$(TargetJellyfinRef)</VersionSuffix>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>Nullable</WarningsAsErrors>
@@ -34,6 +40,7 @@
 
   <Target Name="EnsureJellyfinTree" BeforeTargets="BuildJellyfinServer" Condition="!Exists('$(BaseOutputPath)/dep/tree')">
     <MakeDir Directories="$(BaseOutputPath)/dep"/>
+	<Exec WorkingDirectory="../jellyfin" Command="git fetch"/>
     <Exec WorkingDirectory="../jellyfin" Command="git archive --format zip --output ../JellyfinLoaderStub/$(BaseOutputPath)/dep/tree.zip $(TargetJellyfinRef)"/>
     <Unzip SourceFiles="$(BaseOutputPath)\dep\tree.zip" DestinationFolder="$(BaseOutputPath)\dep\tree"/>
     <Delete Files="$(BaseOutputPath)\dep\tree.zip"/>
@@ -70,5 +77,5 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
